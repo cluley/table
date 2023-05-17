@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 template<class T>
 class table {
 public:
@@ -7,11 +9,9 @@ public:
 		grid = new T * [rows_];
 
 		for (int i = 0; i < rows; ++i) {
-			grid[i] = new T[columns_];
+			grid[i] = new T[columns_]();
 		}
 	}
-
-	table(const table&) = delete;
 
 	~table() {
 		for (int i = 0; i < rows_; ++i) {
@@ -25,14 +25,21 @@ public:
 
 	class proxy {
 	public:
-		proxy(int* row) : _row(row) {}
-		proxy operator[](int idx) const { return _array[idx]; }
+		proxy(int* row, const int columns) : array(row), columns_(columns) {}
+		T& operator[](int idx)
+		{ 
+			if(idx >= columns_) throw std::out_of_range("segmentation fault (core dumped)");
+			return array[idx];
+		}
 	private:
-		T* _row;
+		T* array;
+		const int columns_;
 	};
 
-	proxy operator[](int idx) const {
-		return proxy(grid[idx]);
+	proxy operator[](int idx) const 
+	{
+		if (idx >= rows_) throw std::out_of_range("segmentation fault (core dumped)");
+		return proxy(grid[idx], columns_);
 	}
 private:
 	int rows_;
