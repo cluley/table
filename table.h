@@ -31,15 +31,39 @@ public:
 			if(idx >= columns_) throw std::out_of_range("segmentation fault (core dumped)");
 			return array[idx];
 		}
+		T operator[](int idx) const
+		{
+			if (idx >= columns_) throw std::out_of_range("segmentation fault (core dumped)");
+			return array[idx];
+		}
 	private:
 		T* array;
 		const int columns_;
 	};
 
-	proxy operator[](int idx) const 
+	class cproxy {
+	public:
+		cproxy(int* row, const int columns) : array(row), columns_(columns) {}
+		T operator[](int idx) const
+		{
+			if (idx >= columns_) throw std::out_of_range("segmentation fault (core dumped)");
+			return array[idx];
+		}
+	private:
+		T* array;
+		const int columns_;
+	};
+
+	proxy operator[](int idx)
 	{
 		if (idx >= rows_) throw std::out_of_range("segmentation fault (core dumped)");
 		return proxy(grid[idx], columns_);
+	}
+
+	cproxy operator[](int idx) const
+	{
+		if (idx >= rows_) throw std::out_of_range("segmentation fault (core dumped)");
+		return cproxy(grid[idx], columns_);
 	}
 private:
 	int rows_;
